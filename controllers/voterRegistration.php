@@ -11,16 +11,29 @@ $input = json_decode(file_get_contents("php://input"), true);
 if ($input) {
     $fullname = $input['fullname'];
     $email = $input['email'];
+    $phone = $input['phone'];
     $password = password_hash($input['password'], PASSWORD_BCRYPT);
 
-    $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (?, ?, ?)");
+    $check_candidate = $pdo->prepare("SELECT email FROM users WHERE email = ?");
+    $check_candidate->execute([$email]);
+    $user = $check_candidate->fetch();
     
-    if($stmt->execute([$fullname, $email, $password])){
-        json_encode(["success" => true, 
+    if($user){
+        echo json_encode([
+            'success'=> false,
+            'message'=> 'Candidate alrealy exists',
+        ]);
+        exit();
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO users (name, email, phone, password) VALUES (?,?,?,?)");
+    
+    if($stmt->execute([$fullname, $email, $phone, $password])){
+        echo json_encode(["success" => true, 
         "message"=> "Registration Successful",
     ]);
     }else{
-        json_encode([
+        echo json_encode([
             "success" => false, 
             "message"=> "Registration Failed",
         ]);
