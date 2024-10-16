@@ -14,7 +14,7 @@ if($input) {
     $email = $input['email'];
     $password = $input['password'];
    
-    $stmt = $pdo->prepare("SELECT id, name, email, password FROM users  WHERE email = ?");
+    $stmt = $pdo->prepare("SELECT id, name, email, password, phone FROM users  WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch();
 
@@ -27,6 +27,7 @@ if($input) {
                 'user_id' => $user['id'],
                 'email' => $user['email'],
                 'username' => $user['name'],
+                'phone'=>$user['phone'],
                 'exp' => time()+(3600)
             ];
 
